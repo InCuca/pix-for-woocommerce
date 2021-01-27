@@ -1,5 +1,19 @@
 <?php
 
+/**
+ * QRCode Generator Class based on BR Code Spec
+ *
+ * @see https://www.bcb.gov.br/content/estabilidadefinanceira/spb_docs/ManualBRCode.pdf
+ * @see https://www.bcb.gov.br/content/estabilidadefinanceira/forumpireunioes/AnexoI-PadroesParaIniciacaodoPix.pdf
+ *
+ * @package Pix_For_WooCommerce
+ * @version 1.2.0
+ */
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 define('ICPFW_PAYLOAD_FORMAT_INDICATOR', 00);
 define('ICPFW_POINT_OF_INITIATION_METHOD', 01);
 define('ICPFW_MERCHANT_ACCOUNT_INFORMATION', 26);
@@ -18,14 +32,6 @@ define('ICPFW_TXID', 5);
 
 define('ICPFW_METHOD_ONCE', 12);
 
-/**
- * QRCode Generator Class based on BR Code Spec
- *
- * @see https://www.bcb.gov.br/content/estabilidadefinanceira/spb_docs/ManualBRCode.pdf
- * @see https://www.bcb.gov.br/content/estabilidadefinanceira/forumpireunioes/AnexoI-PadroesParaIniciacaodoPix.pdf
- *
- * @package Pix_For_WooCommerce/Classes/Gateway
- */
 class ICPFW_QRCode
 {
     /**
@@ -217,16 +223,20 @@ class ICPFW_QRCode
      */
     public function toImage()
     {
-        $options = new \chillerlan\QRCode\QROptions([
-            'version' => \chillerlan\QRCode\QRCode::VERSION_AUTO,
-            'outputType' => \chillerlan\QRCode\QRCode::OUTPUT_IMAGE_PNG,
-            'eccLevel' => \chillerlan\QRCode\QRCode::ECC_L,
-            'imageBase64' => true,
-            'imageTransparent' => false,
-        ]);
-        $qrCode = new \chillerlan\QRCode\QRCode($options);
-        $image = $qrCode->render($this->toString());
+        include dirname(__FILE__) . '/../vendor/php-qrcode/qrcode.php';
 
-        return $image;
+        $generator = new ICPFW_Generate_QRCode($this->toString(), $options);
+
+        /* Create bitmap image. */
+        $image = $generator->render_image();
+        ob_start();
+        imagejpeg($image);
+        $contents =  ob_get_contents();
+        ob_end_clean();
+        imagedestroy($image);
+
+        $img_data = "data:image/jpg;base64," . base64_encode($contents);
+
+        return $img_data;
     }
 }

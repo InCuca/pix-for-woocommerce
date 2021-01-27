@@ -9,9 +9,9 @@ Requires WooCommerce at least: 2.1
 
 Tested up to: 5.6
 
-Requires PHP: 7.4
+Requires PHP: 7.1
 
-Stable Tag: 1.1.2
+Stable Tag: 1.2.0
 
 License: GPLv3.0
 
@@ -90,4 +90,8 @@ You can contribute with the code on [GitHub](https://github.com/InCuca/woocommer
 = 2021.01.21 - version 1.1.2 =
 
 * Remove stylesheet loading
+
+= 2021.01.27 - version 1.2.0 =
+
+* New QR Code generator to lower PHP requirements
 
